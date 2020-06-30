@@ -3,6 +3,7 @@
 namespace SamuelTerra22\ReportGenerator\ReportMedia;
 
 use SamuelTerra22\ReportGenerator\ReportGenerator;
+use App\Support\ERP\PDFView;
 
 class PdfReport extends ReportGenerator
 {
@@ -23,38 +24,13 @@ class PdfReport extends ReportGenerator
         $applyFlush = $this->applyFlush;
 
         if ($this->withoutManipulation) {
-            $html = \View::make('laravel-report-generator::without-manipulation-pdf-template',
-                compact('headers', 'columns', 'showTotalColumns', 'query', 'limit', 'groupByArr', 'orientation',
-                    'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'))->render();
+            $pdf = new PDFView('laravel-report-generator::without-manipulation-pdf-template', compact('headers', 'columns', 'showTotalColumns', 'query', 'limit', 'groupByArr', 'orientation',
+                    'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'));
         } else {
-            $html = \View::make('laravel-report-generator::general-pdf-template',
-                compact('headers', 'columns', 'editColumns', 'showTotalColumns', 'styles', 'query', 'limit',
-                    'groupByArr', 'orientation', 'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'))->render();
+            $pdf = new PDFView('laravel-report-generator::general-pdf-template', compact('headers', 'columns', 'showTotalColumns', 'query', 'limit', 'groupByArr', 'orientation',
+                    'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'));
         }
-
-        try {
-            $pdf = \App::make('snappy.pdf.wrapper');
-            $pdf->setOption('footer-font-size', 10);
-            $pdf->setOption('footer-left', 'Page [page] of [topage]');
-            $pdf->setOption('footer-right', 'Date Printed: ' . date('d M Y H:i:s'));
-        } catch (\ReflectionException $e) {
-            try {
-                $pdf = \App::make('dompdf.wrapper');
-            } catch (\ReflectionException $e) {
-                throw new \Exception('Please install either barryvdh/laravel-snappy or laravel-dompdf to generate PDF Report!');
-            }
-        }
-
-        return $pdf->loadHTML($html)->setPaper($this->paper, $orientation);
-    }
-
-    public function stream()
-    {
-        return $this->make()->stream();
-    }
-
-    public function download($filename)
-    {
-        return $this->make()->download($filename . '.pdf');
+        
+        return $pdf;
     }
 }
