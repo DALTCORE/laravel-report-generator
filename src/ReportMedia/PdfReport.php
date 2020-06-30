@@ -25,12 +25,17 @@ class PdfReport extends ReportGenerator
 
         if ($this->withoutManipulation) {
             $pdf = new PDFView('laravel-report-generator::without-manipulation-pdf-template', compact('headers', 'columns', 'showTotalColumns', 'query', 'limit', 'groupByArr', 'orientation',
-                    'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'));
+                'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'));
         } else {
-            $pdf = new PDFView('laravel-report-generator::general-pdf-template', compact('headers', 'columns', 'showTotalColumns', 'query', 'limit', 'groupByArr', 'orientation',
-                    'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'));
+            $pdf = new PDFView('laravel-report-generator::general-pdf-template', compact('headers', 'columns', 'editColumns', 'showTotalColumns', 'styles', 'query', 'limit',
+                'groupByArr', 'orientation', 'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'));
         }
-        
+
         return $pdf;
+    }
+
+    public function getString()
+    {
+        return $this->make()->getString();
     }
 }
